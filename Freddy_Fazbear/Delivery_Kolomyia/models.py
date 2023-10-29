@@ -31,6 +31,12 @@ class Customer(AbstractUser):
     groups = models.ManyToManyField(Group, related_name="customer_users")
     user_permissions = models.ManyToManyField(Permission, related_name="customer_user_permissions")
     
+    def getAuthInfo():
+        customers = Customer.objects.values('email', 'password')
+        return customers
+
+
+    
 class Delivery(AbstractUser):
     first_name = models.CharField(max_length=30)  
     last_name = models.CharField(max_length=30)
