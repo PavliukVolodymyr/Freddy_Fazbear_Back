@@ -4,11 +4,11 @@ from rest_framework.response import Response
 
 from rest_framework import viewsets
 from .models import Dish,Customer
-from .serializers import MyModelSerializer,CustomerSerializer
+from .serializers import DishSerializer,CustomerSerializer
 
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Dish.objects.all()
-    serializer_class = MyModelSerializer
+    serializer_class = DishSerializer
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()

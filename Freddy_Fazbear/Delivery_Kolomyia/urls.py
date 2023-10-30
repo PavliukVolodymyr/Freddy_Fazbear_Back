@@ -4,7 +4,7 @@ from .views import ItemViewSet,CustomerViewSet
 from Delivery_Kolomyia import views
 
 router = routers.DefaultRouter()
-router.register(r'mymodels', ItemViewSet)
+router.register(r'Dishes', ItemViewSet)
 router.register(r'Customers',CustomerViewSet)
 
 urlpatterns = [
