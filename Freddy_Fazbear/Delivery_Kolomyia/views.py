@@ -24,8 +24,7 @@ def Auth(request):
     
     for item in dbInfo:
         if (data.get('email') == item['email'])and(data.get('password') == item['password']):
-            return Response({'повідомлення': 'успішно'})
-    
-    return Response({'повідомлення': 'помилка'})
+            return Response({'message': 'success'})
+    return Response({'message': 'fail'})
 
 # Create your views here.
