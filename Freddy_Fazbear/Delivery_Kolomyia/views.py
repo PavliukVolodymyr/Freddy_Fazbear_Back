@@ -23,7 +23,7 @@ def Auth(request):
     dbInfo = Customer.getAuthInfo()
     
     for item in dbInfo:
-        if (data.get('email') == item.email)and(data.get('password') == item.password):
+        if (data.get('email') == item['email'])and(data.get('password') == item['password']):
             return Response({'повідомлення': 'успішно'})
     
     return Response({'повідомлення': 'помилка'})
