@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from rest_framework import viewsets
-from .models import Dish,Customer,getAuthInfo
+from .models import Dish,Customer
 from .serializers import MyModelSerializer,CustomerSerializer
 
 class ItemViewSet(viewsets.ModelViewSet):
@@ -18,7 +18,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
 def Auth(request):
     # Отримайте дані з запиту
     data = request.data
-    dbInfo=getAuthInfo()
+    dbInfo=Customer.getAuthInfo()
     
     for item in dbInfo:
             if data.get('field_to_compare') == item.field_to_compare:
