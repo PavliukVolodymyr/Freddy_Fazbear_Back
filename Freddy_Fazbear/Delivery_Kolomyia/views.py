@@ -18,11 +18,14 @@ class CustomerViewSet(viewsets.ModelViewSet):
 def Auth(request):
     # Отримайте дані з запиту
     data = request.data
-    dbInfo=Customer.getAuthInfo()
+    
+    # Отримайте інформацію для автентифікації з бази даних
+    dbInfo = Customer.getAuthInfo()
     
     for item in dbInfo:
-            if data.get('field_to_compare') == item.field_to_compare:
-                return Response({'message': 'success'})
-    return Response({'message': 'fail'})
+        if (data.get('email') == item.email)and(data.get('password') == item.password):
+            return Response({'повідомлення': 'успішно'})
+    
+    return Response({'повідомлення': 'помилка'})
 
 # Create your views here.
