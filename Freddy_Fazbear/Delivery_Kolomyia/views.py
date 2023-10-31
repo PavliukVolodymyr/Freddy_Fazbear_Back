@@ -16,17 +16,18 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def Auth(request):
-    # Отримайте дані з запиту
     data = request.data
-    serializer=CustomerSerializer(data=data)
-    # Отримайте інформацію для автентифікації з бази даних
-    dbInfo = Customer.getAuthInfo()
+    serializer = CustomerSerializer(data=data)
     
-    for item in dbInfo:
-        if (data.get('email') == item['email'])and(data.get('password') == item['password']):
-            user = Customer.objects.get(email=data['email'])
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({'message': 'success','token': token.key})
+    if serializer.is_valid():
+        email = data.get('email')
+        password = data.get('password')
+        
+        dbInfo = Customer.getAuthInfo()
+        for item in dbInfo:
+            if email == item['email'] and password == item['password']:
+                user = Customer.objects.get(email=email)
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({'message': 'success', 'token': token.key})
+    
     return Response({'message': 'fail'})
-
-# Create your views here.
