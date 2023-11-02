@@ -10,11 +10,6 @@ class Admin(AbstractUser):
     groups = models.ManyToManyField(Group, related_name="admin_users")
     user_permissions = models.ManyToManyField(Permission, related_name="admin_permissions")
     
-class Dish(models.Model):
-    restaurant_id = models.IntegerField()
-    name = models.CharField(max_length=30,default='Default Name')  
-    cost = models.DecimalField(max_digits=10, decimal_places=2)
-    photo = models.ImageField(upload_to='dish_photos/' , default='default.jpg')
     
 class Restaurant(models.Model):
     name = models.CharField(max_length=30, default='Default Name')
@@ -22,6 +17,13 @@ class Restaurant(models.Model):
     type = models.CharField(max_length=50)
     rating = models.DecimalField(max_digits=3,decimal_places=2)
     photo = models.ImageField(upload_to='restaurant_photos/' , default='default.jpg')
+    
+class Dish(models.Model):
+    # restaurant_id = models.IntegerField()
+    name = models.CharField(max_length=30,default='Default Name')  
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+    photo = models.ImageField(upload_to='dish_photos/' , default='default.jpg')
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, default=1)
     
 class Customer(AbstractUser):
     first_name = models.CharField(max_length=30)

@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import viewsets
-from .models import Dish,Customer
-from .serializers import DishSerializer,CustomerSerializer
+from .models import Dish,Customer,Restaurant
+from .serializers import DishSerializer,CustomerSerializer,RestaurantSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
@@ -15,6 +15,10 @@ class ItemViewSet(viewsets.ModelViewSet):
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    
+class RestaurantViewSet(viewsets.ModelViewSet):
+    queryset = Restaurant.objects.all()
+    serializer_class = RestaurantSerializer
 
 @api_view(['POST'])
 def Auth(request):
