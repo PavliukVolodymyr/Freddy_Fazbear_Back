@@ -53,3 +53,18 @@ def Auth(request):
             # return Response({'message': 'success', 'token': token.key})
     
     return Response({'message': 'fail'})
+
+@api_view(['POST'])
+def get_customer_id_by_token(request):
+    token = request.data.get('token')  # Припустимо, що токен передається як POST параметр 'token'
+    print(token)
+    if not token:
+        return Response({'error': 'Токен не надано.'})
+
+    try:
+        customer_token = CustomerToken.objects.get(token=token)
+    except CustomerToken.DoesNotExist:
+        return Response({'error': 'Токен недійсний.'})
+    user_id = customer_token.customer.id  # Отримуємо ідентифікатор користувача з моделі CustomerToken
+
+    return Response({'user_id': user_id})

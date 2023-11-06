@@ -13,7 +13,8 @@ router.register(r'Restaurants',RestaurantViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
-    path('api/auth/', views.Auth, name='Auth')
+    path('api/auth/', views.Auth, name='Auth'),
+    path('check_token/', views.get_customer_id_by_token, name='Check_token'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
