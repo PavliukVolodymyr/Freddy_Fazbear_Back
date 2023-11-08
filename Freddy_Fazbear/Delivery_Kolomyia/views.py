@@ -94,3 +94,20 @@ def register_customer(request):
             
         except Exception as e:
             return Response({'error': str(e)})
+        
+@api_view(['POST'])
+def add_dish_to_cart(request):
+    customer_id = request.data.get('customer_id')
+    dish_id = request.data.get('dish_id')
+
+    try:
+        customer = Customer.objects.get(id=customer_id)
+        dish = Dish.objects.get(id=dish_id)
+        customer.cart.add(dish)
+        customer.save()
+        serializer = CustomerSerializer(customer)
+        return Response({'message': 'success'})
+    except Customer.DoesNotExist:
+        return Response("Customer not found")
+    except Dish.DoesNotExist:
+        return Response("Dish not found")

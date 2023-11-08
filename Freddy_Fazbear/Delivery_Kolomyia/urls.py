@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/auth/', views.Auth, name='Auth'),
     path('check_token/', views.get_customer_id_by_token, name='Check_token'),
     path('register_customer/', views.register_customer),
+    path('add_dish_to_cart/', views.add_dish_to_cart)
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
