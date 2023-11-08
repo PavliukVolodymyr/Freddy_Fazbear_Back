@@ -68,3 +68,26 @@ def get_customer_id_by_token(request):
     user_id = customer_token.customer.id  # Отримуємо ідентифікатор користувача з моделі CustomerToken
 
     return Response({'user_id': user_id})
+
+@api_view(['POST'])
+def register_customer(request):
+        try:
+            data = request.data
+            email = data['email']
+            password = data['password']
+            first_name = data['first_name']
+            last_name = data['last_name']
+
+            if Customer.objects.filter(email=email).exists():
+                return Response({'error': 'email UNIQUE constraint failed'}, status=400)
+            # Створення користувача
+            customer = Customer.objects.create_user(
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name,
+                username=email,
+            )
+            return Response({'message': 'Користувач зареєстрований успішно.'})
+        except Exception as e:
+            return Response({'error': str(e)})
