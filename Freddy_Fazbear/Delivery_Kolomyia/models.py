@@ -19,7 +19,6 @@ class Restaurant(models.Model):
     photo = models.ImageField(upload_to='restaurant_photos/' , default='default.jpg')
     
 class Dish(models.Model):
-    # restaurant_id = models.IntegerField()
     name = models.CharField(max_length=30,default='Default Name')  
     cost = models.DecimalField(max_digits=10, decimal_places=2)
     photo = models.ImageField(upload_to='dish_photos/' , default='default.jpg')
@@ -30,13 +29,18 @@ class Customer(AbstractUser):
     last_name = models.CharField(max_length=30)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
-    cart = models.ManyToManyField('Dish', blank=True)
+    cart = models.ManyToManyField(Dish, through='CartItem')
     groups = models.ManyToManyField(Group, related_name="customer_users")
     user_permissions = models.ManyToManyField(Permission, related_name="customer_user_permissions")
     
     def getAuthInfo():
         customers = Customer.objects.values('email', 'password')
         return customers
+    
+class CartItem(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
 
 class CustomerToken(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)

@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import viewsets
-from .models import Dish,Customer,Restaurant,CustomerToken
-from .serializers import DishSerializer,CustomerSerializer,RestaurantSerializer
+from .models import Dish,Customer,Restaurant,CustomerToken,CartItem
+from .serializers import DishSerializer,CustomerSerializer,RestaurantSerializer,CartItemSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
@@ -22,6 +22,10 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
 
+class CartItemViewSet(viewsets.ModelViewSet):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+    
 def generate_customer_token(customer):
     try:
         # Спробуйте отримати запис CustomerToken за допомогою токену
@@ -33,7 +37,7 @@ def generate_customer_token(customer):
         CustomerToken.objects.create(customer=customer, token=new_token)
         return new_token
     
-
+@api_view(['POST'])
 def Auth(request):
     data = request.data
     email = data.get('email')
@@ -99,12 +103,14 @@ def register_customer(request):
 def add_dish_to_cart(request):
     customer_id = request.data.get('customer_id')
     dish_id = request.data.get('dish_id')
+    quantity = request.data.get('quantity', 1)  # За замовчуванням 1 страва
 
     try:
         customer = Customer.objects.get(id=customer_id)
         dish = Dish.objects.get(id=dish_id)
-        customer.cart.add(dish)
-        customer.save()
+        cart_item, created = CartItem.objects.get_or_create(customer=customer, dish=dish)
+        cart_item.quantity += 1
+        cart_item.save()
         serializer = CustomerSerializer(customer)
         return Response({'message': 'success'})
     except Customer.DoesNotExist:
