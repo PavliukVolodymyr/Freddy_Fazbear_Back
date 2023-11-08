@@ -103,13 +103,12 @@ def register_customer(request):
 def add_dish_to_cart(request):
     customer_id = request.data.get('customer_id')
     dish_id = request.data.get('dish_id')
-    quantity = request.data.get('quantity', 1)  # За замовчуванням 1 страва
 
     try:
         customer = Customer.objects.get(id=customer_id)
         dish = Dish.objects.get(id=dish_id)
         cart_item, created = CartItem.objects.get_or_create(customer=customer, dish=dish)
-        cart_item.quantity += 1
+        cart_item.quantity +=1
         cart_item.save()
         serializer = CustomerSerializer(customer)
         return Response({'message': 'success'})
@@ -117,3 +116,19 @@ def add_dish_to_cart(request):
         return Response("Customer not found")
     except Dish.DoesNotExist:
         return Response("Dish not found")
+    
+@api_view(['POST'])
+def change_count_in_cart(request):
+    customer_id = request.data.get('customer_id')
+    dish_id = request.data.get('dish_id')
+    quantity = request.data.get('quantity', 1)
+    try:
+        cart_item = CartItem.objects.get(customer=customer_id, dish=dish_id)
+        cart_item.quantity = quantity
+        cart_item.save()
+        serializer = CustomerSerializer(cart_item)
+        return Response({'message': 'success'})
+    except CartItem.DoesNotExist:
+        return Response("CartItem not found")
+    
+    
