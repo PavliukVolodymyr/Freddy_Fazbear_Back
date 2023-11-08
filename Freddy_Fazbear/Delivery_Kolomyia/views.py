@@ -133,9 +133,10 @@ def change_count_in_cart(request):
     
 @api_view(['POST'])
 def delete_cart_item(request):
-    cart_item_id=request.data.get('cart_item_id')
+    customer_id = request.data.get('customer_id')
+    dish_id = request.data.get('dish_id')
     try:
-        cart_item = CartItem.objects.get(id=cart_item_id)
+        cart_item = CartItem.objects.get(customer=customer_id, dish=dish_id)
         cart_item.delete()
         return Response({'message': 'success'})
     except CartItem.DoesNotExist:
