@@ -8,6 +8,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 import secrets
+from django.contrib.auth import authenticate
 
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Dish.objects.all()
@@ -20,39 +21,62 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class RestaurantViewSet(viewsets.ModelViewSet):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
-    
+
 def generate_customer_token(customer):
-    CustomerToken.objects.filter(customer=customer).delete()
-    token, created = CustomerToken.objects.get_or_create(customer=customer)
-    if created:
-        # Генеруємо токен для нового користувача
-        token.token = secrets.token_urlsafe(30)
-        token.save()
-    return token.token
+    try:
+        # Спробуйте отримати запис CustomerToken за допомогою токену
+        customer_token = CustomerToken.objects.get(customer=customer)
+        return customer_token.token
+    except CustomerToken.DoesNotExist:
+        # Якщо запис не знайдено, створіть новий токен
+        new_token = secrets.token_urlsafe(30)
+        CustomerToken.objects.create(customer=customer, token=new_token)
+        return new_token
     
 
+# @api_view(['POST'])
+# def Auth(request):
+#     data = request.data
+#     serializer = CustomerSerializer(data=data)
+    
+#     # if serializer.is_valid():
+#     email = data.get('email')
+#     password = data.get('password')
+        
+#     dbInfo = Customer.getAuthInfo()
+#     for item in dbInfo:
+#         if email == item['email'] and Customer.check_password(password):
+#             customer = Customer.objects.get(email=email)
+#             # user = get_user_model().objects.get(username=username)
+#             # print(user)
+#             customer_token = generate_customer_token(customer)
+#             print(customer_token)
+#             return Response({'message': 'success', 'token': customer_token})
+#             # token, created = Token.objects.get_or_create(user=customer)
+#             # return Response({'message': 'success', 'token': token.key})
+    
+#     return Response({'message': 'fail'})
 @api_view(['POST'])
 def Auth(request):
     data = request.data
-    serializer = CustomerSerializer(data=data)
-    
-    # if serializer.is_valid():
     email = data.get('email')
     password = data.get('password')
-        
-    dbInfo = Customer.getAuthInfo()
-    for item in dbInfo:
-        if email == item['email'] and password == item['password']:
-            customer = Customer.objects.get(email=email)
-            # user = get_user_model().objects.get(username=username)
-            # print(user)
+
+    try:
+        # Отримати користувача за email
+        customer = Customer.objects.get(email=email)
+        print(customer)
+
+        # Перевірити, чи пароль співпадає з хешем у базі даних
+        passwords_match = customer.check_password(password)
+
+        if passwords_match:
             customer_token = generate_customer_token(customer)
-            print(customer_token)
             return Response({'message': 'success', 'token': customer_token})
-            # token, created = Token.objects.get_or_create(user=customer)
-            # return Response({'message': 'success', 'token': token.key})
-    
-    return Response({'message': 'fail'})
+        else:
+            return Response({'message': 'fail'})
+    except Customer.DoesNotExist:
+        return Response({'message': 'fail'})
 
 @api_view(['POST'])
 def get_customer_id_by_token(request):
