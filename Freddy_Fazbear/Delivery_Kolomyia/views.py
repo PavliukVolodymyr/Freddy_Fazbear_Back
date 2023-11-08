@@ -34,29 +34,6 @@ def generate_customer_token(customer):
         return new_token
     
 
-# @api_view(['POST'])
-# def Auth(request):
-#     data = request.data
-#     serializer = CustomerSerializer(data=data)
-    
-#     # if serializer.is_valid():
-#     email = data.get('email')
-#     password = data.get('password')
-        
-#     dbInfo = Customer.getAuthInfo()
-#     for item in dbInfo:
-#         if email == item['email'] and Customer.check_password(password):
-#             customer = Customer.objects.get(email=email)
-#             # user = get_user_model().objects.get(username=username)
-#             # print(user)
-#             customer_token = generate_customer_token(customer)
-#             print(customer_token)
-#             return Response({'message': 'success', 'token': customer_token})
-#             # token, created = Token.objects.get_or_create(user=customer)
-#             # return Response({'message': 'success', 'token': token.key})
-    
-#     return Response({'message': 'fail'})
-@api_view(['POST'])
 def Auth(request):
     data = request.data
     email = data.get('email')
@@ -112,6 +89,8 @@ def register_customer(request):
                 last_name=last_name,
                 username=email,
             )
-            return Response({'message': 'Користувач зареєстрований успішно.'})
+            customer_token = generate_customer_token(customer)
+            return Response({'message': 'success', 'token': customer_token})
+            
         except Exception as e:
             return Response({'error': str(e)})
